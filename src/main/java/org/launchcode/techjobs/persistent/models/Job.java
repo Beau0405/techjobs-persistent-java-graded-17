@@ -61,6 +61,5 @@ public class Job<employer> extends AbstractEntity {
         this.skills = skills;
     }
 
-    public void setEmployer(String s) {
-    }
+
 }

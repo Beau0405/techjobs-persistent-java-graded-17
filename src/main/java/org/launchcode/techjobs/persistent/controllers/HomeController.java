@@ -3,9 +3,11 @@ package org.launchcode.techjobs.persistent.controllers;
 import jakarta.validation.Valid;
 import org.launchcode.techjobs.persistent.models.Employer;
 import org.launchcode.techjobs.persistent.models.Job;
+import org.launchcode.techjobs.persistent.models.Skill;
 import org.launchcode.techjobs.persistent.models.data.EmployerRepository;
 import org.launchcode.techjobs.persistent.models.data.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.launchcode.techjobs.persistent.models.data.JobRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -26,11 +28,14 @@ public class HomeController {
     @Autowired
     public SkillRepository skillRepository;
 
+    @Autowired
+    public JobRepository jobRepository;
+
     @RequestMapping("/")
     public String index(Model model) {
 
         model.addAttribute("title", "MyJobs");
-
+        model.addAttribute("jobs", jobRepository.findAll());
         return "index";
     }
 
@@ -55,16 +60,30 @@ public class HomeController {
         Optional<Employer> result = employerRepository.findById(employerId);
         if (result.isPresent()){
             Employer employer = result.get();
-            newJob.setEmployer(String.valueOf(employer));
+            newJob.setEmployer(employer);
         }
+
+        List<Skill> skillObjs;
+        skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+        newJob.setSkills(skillObjs);
+
+        jobRepository.save(newJob);
 
         return "redirect:";
     }
 
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
+        Optional optJob = jobRepository.findById(jobId);
+            if (optJob.isPresent()){
+                Job job = (Job) optJob.get();
+                model.addAttribute("job",job);
+                return "view";
 
-            return "view";
+            }
+
+
+            return "redirect";
     }
 
 }
