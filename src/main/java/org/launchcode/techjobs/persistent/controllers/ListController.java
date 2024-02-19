@@ -32,7 +32,7 @@ public class ListController {
 
     }
 
-    @RequestMapping("")
+    @RequestMapping("/")
     public String list(Model model) {
 
         return "list";
